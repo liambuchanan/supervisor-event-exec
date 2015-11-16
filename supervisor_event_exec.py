@@ -16,7 +16,7 @@ from supervisor.states import ProcessStates
 class SupervisorEventExec(object):
     def __init__(self, rpc, command, restart_programs, restart_any_program):
         self.rpc = rpc
-        self.command
+        self.command = command
         self.restart_programs = restart_programs
         self.restart_any_program = restart_any_program
         self.stdin = sys.stdin
@@ -56,8 +56,10 @@ class SupervisorEventExec(object):
     def runforever(self):
         while True:
             headers, payload = childutils.listener.wait(self.stdin, self.stdout)
-            exit_status = subprocess.call(shlex.split(self.command), shell=True)
+            print("Executing command: {}.".format(self.command), file=self.stderr)
+            exit_status = subprocess.Popen(self.command, shell=True).wait()
             if exit_status != 0 and (len(self.restart_programs) > 0 or self.restart_any_program):
+                print("The command exit status was non-zero, restarting processes.", file=self.stderr)
                 self._restart_processes()
             childutils.listener.ok(self.stdout)
 
@@ -73,7 +75,6 @@ def main():
     parser.add_argument("-a", "--restart-any-program", action="store_true",
                         help="Restart any supervisor processes in RUNNING state on non-zero exit status.")
     args = parser.parse_args()
-    print(args)
 
     try:
         rpc = childutils.getRPCInterface(os.environ)

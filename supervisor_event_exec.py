@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import print_function
+import shlex
 import subprocess
 import sys
 try:
@@ -55,8 +56,7 @@ class SupervisorEventExec(object):
     def runforever(self):
         while True:
             headers, payload = childutils.listener.wait(self.stdin, self.stdout)
-            # do exec
-            exit_status = subprocess.call(self.command, shell=True)
+            exit_status = subprocess.call(shlex.split(self.command), shell=True)
             if exit_status != 0 and (len(self.restart_programs) > 0 or self.restart_any_program):
                 self._restart_processes()
             childutils.listener.ok(self.stdout)

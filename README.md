@@ -1,3 +1,5 @@
+In the unlikely event anyone is using this, please see [supervisor-event-listeners](https://github.com/PlotWatt/supervisor-event-listeners).
+
 # supervisor-event-exec
 
 Execute arbitrary commands on supervisor events and restart processes on non-zero exit status if desired.
